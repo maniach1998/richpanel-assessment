@@ -8,11 +8,22 @@ import {
 	Tooltip,
 	ResponsiveContainer,
 } from 'recharts';
-import _ from 'lodash';
-import faker from 'faker';
-import { Search } from 'semantic-ui-react';
 
-import jsonData from './city.list.json';
+import { useLoadScript } from '@react-google-maps/api';
+
+import usePlacesAutocomplete, {
+	getGeocode,
+	getLatLng,
+} from 'use-places-autocomplete';
+import {
+	Combobox,
+	ComboboxInput,
+	ComboboxPopover,
+	ComboboxList,
+	ComboboxOption,
+} from '@reach/combobox';
+
+const libraries = ['places'];
 
 const ForecastCards = () => {
 	const items = Array(5).fill({
@@ -122,12 +133,12 @@ const DetailCard = () => {
 								y2='1'>
 								<stop
 									offset='25%'
-									stopColor='#8884d8'
+									stopColor='#7bbae8'
 									stopOpacity={0.6}
 								/>
 								<stop
 									offset='100%'
-									stopColor='#8884d8'
+									stopColor='#7bbae8'
 									stopOpacity={0}
 								/>
 							</linearGradient>
@@ -139,7 +150,7 @@ const DetailCard = () => {
 						<Area
 							type='monotone'
 							dataKey='uv'
-							stroke='#8884d8'
+							stroke='#7bbae8'
 							fillOpacity={1}
 							fill='url(#colorUv)'
 						/>
@@ -180,88 +191,69 @@ const DetailCard = () => {
 	);
 };
 
-const initialState = {
-	loading: false,
-	results: [],
-	value: '',
-};
-
-// const source = _.times(5, () => ({
-// 	title: faker.company.companyName(),
-// 	description: faker.company.catchPhrase(),
-// 	image: faker.internet.avatar(),
-// 	price: faker.finance.amount(0, 100, 2, '$'),
-// }));
-
-const source = [];
-jsonData.map((item) => source.push(item));
-
-function exampleReducer(state, action) {
-	switch (action.type) {
-		case 'CLEAN_QUERY':
-			return initialState;
-		case 'START_SEARCH':
-			return { ...state, loading: true, value: action.query };
-		case 'FINISH_SEARCH':
-			return { ...state, loading: false, results: action.results };
-		case 'UPDATE_SELECTION':
-			return { ...state, value: action.selection };
-
-		default:
-			throw new Error();
-	}
-}
-
 const SearchBar = () => {
-	const [state, dispatch] = React.useReducer(exampleReducer, initialState);
-	const { loading, results, value } = state;
-
-	const timeoutRef = React.useRef();
-	const handleSearchChange = React.useCallback((e, data) => {
-		clearTimeout(timeoutRef.current);
-		dispatch({ type: 'START_SEARCH', query: data.value });
-
-		timeoutRef.current = setTimeout(() => {
-			if (data.value.length === 0) {
-				dispatch({ type: 'CLEAN_QUERY' });
-				return;
-			}
-
-			const re = new RegExp(_.escapeRegExp(data.value), 'i');
-			const isMatch = (result) => re.test(result.title);
-
-			dispatch({
-				type: 'FINISH_SEARCH',
-				results: _.filter(source, isMatch),
-			});
-		}, 300);
-	}, []);
-	React.useEffect(() => {
-		return () => {
-			clearTimeout(timeoutRef.current);
-		};
-	}, []);
+	const {
+		ready,
+		value,
+		suggestions: { status, data },
+		setValue,
+		clearSuggestions,
+	} = usePlacesAutocomplete({
+		requestOptions: {
+			location: new window.google.maps.LatLng(
+				parseFloat(19.07609),
+				parseFloat(72.877426)
+			),
+			radius: 200 * 1000,
+		},
+	});
 
 	return (
-		<Search
-			fluid
-			size='big'
-			input={{ icon: 'map marker alternate', iconPosition: 'left' }}
-			loading={loading}
-			onResultSelect={(e, data) =>
-				dispatch({
-					type: 'UPDATE_SELECTION',
-					selection: data.result.title,
-				})
-			}
-			onSearchChange={handleSearchChange}
-			results={results}
-			value={value}
-		/>
+		<div className='search'>
+			<Combobox
+				onSelect={async (address) => {
+					setValue(address, false);
+					clearSuggestions();
+
+					try {
+						const result = await getGeocode({ address });
+						console.log(result);
+						const { lat, lng } = await getLatLng(result[0]);
+					} catch (error) {
+						console.log(error);
+					}
+				}}>
+				<ComboboxInput
+					value={value}
+					onChange={(e) => {
+						setValue(e.target.value);
+					}}
+					disabled={!ready}
+					placeholder='Enter an address'
+				/>
+				<ComboboxPopover>
+					<ComboboxList>
+						{status === 'OK' &&
+							data.map(({ id, description }) => (
+								<ComboboxOption key={id} value={description} />
+							))}
+					</ComboboxList>
+				</ComboboxPopover>
+			</Combobox>
+		</div>
 	);
+	// return <div></div>;
 };
 
 const App = () => {
+	const { isLoaded, loadError } = useLoadScript({
+		googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
+		libraries,
+	});
+
+	if (loadError) return <div>Error loading maps</div>;
+	if (!isLoaded) return <div>Loading Maps</div>;
+
 	return (
 		<div className='container mx-auto md:px-12 lg:px-16 xl:px-20'>
 			<div className='p-4 flex justify-center'>
