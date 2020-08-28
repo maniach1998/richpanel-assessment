@@ -25,7 +25,7 @@ const App = () => {
 		async function fetchData() {
 			axios
 				.post(
-					`http://api.openweathermap.org/data/2.5/forecast?lat=${place.lat}&lon=${place.lng}&units=metric&appid=${process.env.REACT_APP_WEATHER_API_KEY}`
+					`https://api.openweathermap.org/data/2.5/forecast?lat=${place.lat}&lon=${place.lng}&units=metric&appid=${process.env.REACT_APP_WEATHER_API_KEY}`
 				)
 				.then((res) => {
 					const groups = _.groupBy(res.data.list, function (item) {
