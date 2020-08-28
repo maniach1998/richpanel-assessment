@@ -13,17 +13,28 @@ code {
 }
 
 .search {
-	/* position: absolute;
-	top: 1rem;
-	left: 50%;
-	transform: translateX(-50%); */
+	position: relative;
 	width: 100%;
 	max-width: 75%;
 	z-index: 10;
 }
 
+.search img:first-child {
+	position: absolute;
+	top: 0.75em;
+	margin-left: 1em;
+}
+
+.search img:last-child {
+	position: absolute;
+	top: 0.75em;
+	right: 0;
+	margin-right: 1em;
+}
+
 .search input {
 	padding: 0.75rem;
+	padding-left: 3em;
 	font-style: 1.5rem;
 	width: 100%;
 }

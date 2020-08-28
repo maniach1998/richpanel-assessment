@@ -2,7 +2,6 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import '@reach/combobox/styles.css';
-// import 'semantic-ui-css/semantic.min.css';
 import './tailwind.output.css';
 
 import App from './App';
