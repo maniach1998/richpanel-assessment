@@ -35,6 +35,8 @@ code {
 .search input {
 	padding: 0.75rem;
 	padding-left: 3em;
-	font-style: 1.5rem;
+	padding-right: 2.75em;
+	font-style: 1.25rem;
 	width: 100%;
+	overflow: hidden;
 }

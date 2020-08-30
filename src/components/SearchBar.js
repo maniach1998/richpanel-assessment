@@ -10,7 +10,9 @@ import {
 	ComboboxPopover,
 	ComboboxList,
 	ComboboxOption,
+	ComboboxOptionText,
 } from '@reach/combobox';
+import SearchWeather from './SearchWeather';
 
 const SearchBar = ({ setPlace }) => {
 	const {
@@ -34,7 +36,7 @@ const SearchBar = ({ setPlace }) => {
 			<img
 				src='images/location.svg'
 				alt='location icon'
-				className='location w-6'
+				className='location w-4 md:w-6 mt-1 md:mt-0'
 			/>
 			<Combobox
 				onSelect={async (address) => {
@@ -58,11 +60,20 @@ const SearchBar = ({ setPlace }) => {
 					className='rounded-lg shadow-lg focus:shadow-outline focus:outline-none focus:border-blue-400'
 					placeholder='Enter an address'
 				/>
-				<ComboboxPopover>
-					<ComboboxList>
+				<ComboboxPopover className='rounded shadow-xl border-0'>
+					<ComboboxList className='divide-y divide-gray-400'>
 						{status === 'OK' &&
 							data.map(({ id, description }) => (
-								<ComboboxOption key={id} value={description} />
+								<ComboboxOption key={id} value={description}>
+									<div className='flex justify-between items-center py-2'>
+										<div className='flex-1'>
+											<ComboboxOptionText />
+										</div>
+										<div className='flex flex-initial items-center'>
+											<SearchWeather data={description} />
+										</div>
+									</div>
+								</ComboboxOption>
 							))}
 					</ComboboxList>
 				</ComboboxPopover>
@@ -70,7 +81,7 @@ const SearchBar = ({ setPlace }) => {
 			<img
 				src='images/search.svg'
 				alt='search icon'
-				className='search-icon w-6'
+				className='search-icon w-4 md:w-6 mt-1 md:mt-0'
 			/>
 		</div>
 	);

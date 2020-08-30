@@ -67,7 +67,7 @@ const App = () => {
 			<div className='p-4 flex justify-center'>
 				<SearchBar setPlace={setPlace} />
 			</div>
-			<div>
+			<div className='flex flex-no-wrap xl:justify-evenly w-full overflow-auto'>
 				<ForecastCards
 					data={weatherData}
 					selectedDay={selectedDay}

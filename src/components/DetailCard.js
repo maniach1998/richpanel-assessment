@@ -13,29 +13,25 @@ import _ from 'underscore';
 
 const DetailCard = ({ data, details, selectedDay }) => {
 	const { sunrise, sunset } = details;
-	const parsed = Object.entries(data)
-		.map((item) => {
-			return {
-				day: item[0],
-				main: item[1][0].main,
-				weather: item[1][0].weather[0],
-			};
-		})
-		.slice(0, 5);
+	const parsed = Object.entries(data).map((item) => {
+		return {
+			day: item[0],
+			main: item[1][0].main,
+			weather: item[1][0].weather[0],
+		};
+	});
 
-	const graph = Object.entries(data)
-		.map((item) => {
-			return {
-				day: item[0],
-				data: item[1].map((obj) => {
-					return {
-						temp: obj.main.temp,
-						time: moment.unix(obj.dt).format('LT'),
-					};
-				}),
-			};
-		})
-		.slice(0, 5);
+	const graph = Object.entries(data).map((item) => {
+		return {
+			day: item[0],
+			data: item[1].map((obj) => {
+				return {
+					temp: obj.main.temp,
+					time: moment.unix(obj.dt).format('LT'),
+				};
+			}),
+		};
+	});
 
 	const currentDay = parsed.filter((item) => {
 		return item.day === selectedDay;
