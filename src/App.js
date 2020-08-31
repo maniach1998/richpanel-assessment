@@ -8,6 +8,9 @@ import SearchBar from './components/SearchBar';
 import ForecastCards from './components/ForecastCards';
 import DetailCard from './components/DetailCard';
 
+import parseWeather from './utils/parseWeather';
+import parseGraph from './utils/parseGraph';
+
 const libraries = ['places'];
 
 const App = () => {
@@ -18,6 +21,7 @@ const App = () => {
 
 	const [place, setPlace] = React.useState({ lat: 19.0144, lng: 72.8479 });
 	const [weatherData, setWeatherData] = React.useState({});
+	const [graphData, setGraphData] = React.useState({});
 	const [extraDetails, setExtraDetails] = React.useState({});
 	const [selectedDay, setSelectedDay] = React.useState({});
 
@@ -31,9 +35,11 @@ const App = () => {
 					const groups = _.groupBy(res.data.list, function (item) {
 						return moment(item.dt_txt).format('dddd');
 					});
-					setExtraDetails(res.data.city);
-					setWeatherData(groups);
+
 					setSelectedDay(Object.keys(groups)[0]);
+					setExtraDetails(res.data.city);
+					setWeatherData(parseWeather(groups));
+					setGraphData(parseGraph(groups));
 				});
 		}
 
@@ -75,11 +81,23 @@ const App = () => {
 				/>
 			</div>
 			<div className='p-4'>
-				<DetailCard
-					data={weatherData}
-					details={extraDetails}
-					selectedDay={selectedDay}
-				/>
+				{!_.isEmpty(graphData) && (
+					<DetailCard
+						data={weatherData}
+						graph={graphData}
+						details={extraDetails}
+						currentDay={
+							weatherData.filter((item) => {
+								return item.day === selectedDay;
+							})[0]
+						}
+						currentGraph={
+							graphData.filter((item) => {
+								return item.day === selectedDay;
+							})[0]
+						}
+					/>
+				)}
 			</div>
 		</div>
 	);

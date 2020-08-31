@@ -1,5 +1,4 @@
 import React from 'react';
-
 import usePlacesAutocomplete, {
 	getGeocode,
 	getLatLng,

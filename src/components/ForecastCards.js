@@ -2,14 +2,6 @@ import React from 'react';
 import _ from 'underscore';
 
 const ForecastCards = ({ data, selectedDay, setSelectedDay }) => {
-	const parsed = Object.entries(data).map((item) => {
-		return {
-			day: item[0],
-			main: item[1][0].main,
-			weather: item[1][0].weather[0],
-		};
-	});
-
 	if (_.isEmpty(data))
 		return (
 			<div className='flex justify-center items-center py-3'>
@@ -21,7 +13,7 @@ const ForecastCards = ({ data, selectedDay, setSelectedDay }) => {
 
 	return (
 		<div className='flex flex-no-wrap justify-center items-center py-3 px-3 md:px-0'>
-			{parsed.map(({ day, main, weather }) => (
+			{data.map(({ day, main, weather }) => (
 				<div
 					key={day}
 					className={`px-3 md:px-6 py-3 lg:px-10 lg:py-6 cursor-pointer border-2 ${

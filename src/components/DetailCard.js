@@ -11,35 +11,8 @@ import {
 import moment from 'moment';
 import _ from 'underscore';
 
-const DetailCard = ({ data, details, selectedDay }) => {
+const DetailCard = ({ data, graph, details, currentDay, currentGraph }) => {
 	const { sunrise, sunset } = details;
-	const parsed = Object.entries(data).map((item) => {
-		return {
-			day: item[0],
-			main: item[1][0].main,
-			weather: item[1][0].weather[0],
-		};
-	});
-
-	const graph = Object.entries(data).map((item) => {
-		return {
-			day: item[0],
-			data: item[1].map((obj) => {
-				return {
-					temp: obj.main.temp,
-					time: moment.unix(obj.dt).format('LT'),
-				};
-			}),
-		};
-	});
-
-	const currentDay = parsed.filter((item) => {
-		return item.day === selectedDay;
-	})[0];
-
-	const currentGraph = graph.filter((item) => {
-		return item.day === selectedDay;
-	})[0];
 
 	if (_.isEmpty(data))
 		return (
@@ -66,41 +39,42 @@ const DetailCard = ({ data, details, selectedDay }) => {
 			</div>
 
 			<div className='p-2'>
-				<ResponsiveContainer width='100%' height={350}>
-					<AreaChart
-						data={currentGraph ? currentGraph.data : graph[0].data}>
-						<defs>
-							<linearGradient
-								id='colorUv'
-								x1='0'
-								y1='0'
-								x2='0'
-								y2='1'>
-								<stop
-									offset='0%'
-									stopColor='#7bbae8'
-									stopOpacity={0.8}
-								/>
-								<stop
-									offset='60%'
-									stopColor='#7bbae8'
-									stopOpacity={0}
-								/>
-							</linearGradient>
-						</defs>
-						<XAxis dataKey='time' />
-						<YAxis hide />
-						<CartesianGrid horizontal={false} />
-						<Tooltip />
-						<Area
-							type='monotone'
-							dataKey='temp'
-							stroke='#7bbae8'
-							fillOpacity={1}
-							fill='url(#colorUv)'
-						/>
-					</AreaChart>
-				</ResponsiveContainer>
+				{!_.isEmpty(graph) && (
+					<ResponsiveContainer width='100%' height={350}>
+						<AreaChart data={currentGraph.data}>
+							<defs>
+								<linearGradient
+									id='colorUv'
+									x1='0'
+									y1='0'
+									x2='0'
+									y2='1'>
+									<stop
+										offset='0%'
+										stopColor='#7bbae8'
+										stopOpacity={0.8}
+									/>
+									<stop
+										offset='60%'
+										stopColor='#7bbae8'
+										stopOpacity={0}
+									/>
+								</linearGradient>
+							</defs>
+							<XAxis dataKey='time' />
+							<YAxis hide />
+							<CartesianGrid horizontal={false} />
+							<Tooltip />
+							<Area
+								type='monotone'
+								dataKey='temp'
+								stroke='#7bbae8'
+								fillOpacity={1}
+								fill='url(#colorUv)'
+							/>
+						</AreaChart>
+					</ResponsiveContainer>
+				)}
 			</div>
 
 			<div className='flex justify-center justify-center p-2 md:p-4'>
